@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f0f3fa">
+  <title>Jefferson Cai · 个人主页</title>
+  <meta name="description" content="Jefferson Cai 的个人主页与作品集。UNSW IT 一年级，学习人工智能，用 AI 协作探索小工具、桌宠、网页小游戏和像素视频。">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Jefferson Cai · Personal Space">
+  <meta property="og:description" content="Jefferson Cai 的双语作品集：QuotaPet、蕾塞桌宠、网页小游戏与像素格斗 MV。UNSW IT · AI 协作 · 边学边做。">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="preload" as="image" href="./assets/banner.webp" fetchpriority="high">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./vendor/gsap.min.js" defer></script>
+  <script src="./vendor/lucide.min.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="skip">跳至主要内容</a>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
+
+  <header class="site-header">
+    <div class="navbar">
+      <a class="wordmark" href="#home" aria-label="Jefferson Cai · 首页" data-i18n-aria="homeLabel">
+        <span class="brand-icon"><i data-lucide="house" aria-hidden="true"></i></span>
+        <span>Jefferson<span class="wordmark-dot">.</span></span>
+      </a>
+      <nav class="desktop-nav" aria-label="主导航" data-i18n-aria="mainNavigation">
+        <a class="nav-link is-active" href="#home" data-section="home"><span data-i18n="navHome">首页</span></a>
+        <a class="nav-link" href="#about" data-section="about"><span data-i18n="navAbout">关于我</span></a>
+        <a class="nav-link" href="#making" data-section="making"><span data-i18n="navWorks">作品</span></a>
+        <a class="nav-link" href="#resume" data-section="resume"><span data-i18n="navResume">简历</span></a>
+        <a class="nav-link" href="#contact" data-section="contact"><span data-i18n="navContact">联系</span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+      </nav>
+      <div class="nav-tools">
+        <div class="language-control" role="group" aria-label="网站语言" data-i18n-aria="languageLabel">
+          <button type="button" data-language="zh" aria-pressed="true" aria-label="简体中文">中</button>
+          <span aria-hidden="true">/</span>
+          <button type="button" data-language="en" aria-pressed="false" aria-label="English">EN</button>
+        </div>
+        <span class="tool-divider" aria-hidden="true"></span>
+        <button type="button" class="icon-button" id="appearance-toggle" aria-label="外观设置" data-i18n-aria="appearanceLabel" aria-expanded="false" aria-controls="appearance-panel">
+          <i data-lucide="palette" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="icon-button" id="theme-toggle" aria-label="切换深色模式">
+          <i data-lucide="sun" class="sun-icon" aria-hidden="true"></i>
+          <i data-lucide="moon" class="moon-icon" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="icon-button menu-button" id="menu-toggle" aria-label="打开导航菜单" data-i18n-aria="menuLabel" aria-expanded="false" aria-controls="mobile-menu">
+          <i data-lucide="menu" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <section class="appearance-panel" id="appearance-panel" aria-label="外观设置" data-i18n-aria="appearanceLabel" hidden>
+        <div class="panel-heading"><span data-i18n="appearance">外观设置</span><button type="button" class="reset-button" id="reset-appearance" data-i18n="reset">重置</button></div>
+        <div class="mode-control" role="group" aria-label="显示模式" data-i18n-aria="modeLabel">
+          <button type="button" data-mode="light" aria-pressed="true"><i data-lucide="sun" aria-hidden="true"></i><span data-i18n="light">浅色</span></button>
+          <button type="button" data-mode="dark" aria-pressed="false"><i data-lucide="moon" aria-hidden="true"></i><span data-i18n="dark">深色</span></button>
+          <button type="button" data-mode="system" aria-pressed="false"><i data-lucide="monitor" aria-hidden="true"></i><span data-i18n="system">系统</span></button>
+        </div>
+        <div class="color-label"><label for="hue-slider" data-i18n="accentColor">主题颜色</label><output id="hue-value" for="hue-slider">230°</output></div>
+        <div class="color-swatches" role="group" aria-label="预设颜色" data-i18n-aria="presetColors">
+          <button type="button" data-hue="230" style="--swatch:230" aria-label="靛蓝" data-i18n-aria="indigo" aria-pressed="true"></button>
+          <button type="button" data-hue="200" style="--swatch:200" aria-label="天蓝" data-i18n-aria="sky" aria-pressed="false"></button>
+          <button type="button" data-hue="160" style="--swatch:160" aria-label="薄荷绿" data-i18n-aria="mint" aria-pressed="false"></button>
+          <button type="button" data-hue="285" style="--swatch:285" aria-label="紫色" data-i18n-aria="violet" aria-pressed="false"></button>
+          <button type="button" data-hue="345" style="--swatch:345" aria-label="玫瑰色" data-i18n-aria="rose" aria-pressed="false"></button>
+        </div>
+        <input type="range" id="hue-slider" min="0" max="359" value="230" aria-label="主题颜色" data-i18n-aria="accentColor">
+        <p class="panel-note" data-i18n="appearanceNote">挑一个喜欢的颜色，让这里更像你。</p>
+      </section>
+      <nav class="mobile-menu" id="mobile-menu" aria-label="手机导航" data-i18n-aria="mobileNavigation" hidden>
+        <a href="#home"><i data-lucide="house" aria-hidden="true"></i><span data-i18n="navHome">首页</span></a>
+        <a href="#about"><i data-lucide="user-round" aria-hidden="true"></i><span data-i18n="navAbout">关于我</span></a>
+        <a href="#making"><i data-lucide="shapes" aria-hidden="true"></i><span data-i18n="navWorks">作品</span></a>
+        <a href="#resume"><i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="navResume">简历</span></a>
+        <a href="#contact"><i data-lucide="mail" aria-hidden="true"></i><span data-i18n="navContact">联系</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="home" aria-label="主页横幅" data-i18n-aria="heroLabel">
+    <img class="hero-image" src="./assets/banner.webp" alt="黑蓝色锁链与发光拼图碎片构成的神秘动漫风背景" data-i18n-alt="bannerAlt" width="2172" height="724" fetchpriority="high">
+    <div class="hero-shade" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-particles" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="hero-eyebrow"><span></span> JEFFERSON'S PERSONAL SPACE</p>
+        <h1>Jefferson Cai<span class="hero-period">.</span></h1>
+        <p class="hero-description" data-i18n="heroDescription">在代码、游戏与想象之间。</p>
+        <a class="hero-link" href="#about"><span data-i18n="explore">走进我的小世界</span><i data-lucide="arrow-down-right" aria-hidden="true"></i></a>
+      </div>
+      <div class="hero-signature" aria-hidden="true"><span>BLUE LOCK</span><span class="signature-line"></span><span>ブルーロック</span></div>
+    </div>
+    <div class="hero-bottom-line" aria-hidden="true"></div>
+  </section>
+
+  <div class="page-grid" id="main-content">
+    <aside class="sidebar" aria-label="个人资料" data-i18n-aria="profileLabel">
+      <section class="card profile-card reveal">
+        <div class="avatar-frame"><img src="./assets/avatar.jpg" alt="Jefferson 选择的 BLUE LOCK 动漫头像" data-i18n-alt="avatarAlt" width="1152" height="1152" decoding="async"></div>
+        <div class="profile-details">
+          <p class="profile-overline">HELLO, WORLD</p>
+          <h2>Jefferson Cai</h2>
+          <span class="profile-role"><span class="status-dot"></span><span data-i18n="profileRole">UNSW · IT 一年级</span></span>
+          <p class="profile-bio" data-i18n="profileBio">自制工具、小游戏，<br>还有一点动漫脑洞。</p>
+          <div class="profile-socials">
+            <a href="mailto:caihaodong44chd@gmail.com" class="social-button" aria-label="给 Jefferson 发邮件" data-i18n-aria="emailJefferson"><i data-lucide="mail" aria-hidden="true"></i></a>
+            <a href="https://www.linkedin.com/in/%E7%81%8F%E4%B8%9C-%E8%94%A1-1385b743b/" class="social-button" aria-label="打开 LinkedIn 主页" data-i18n-aria="openLinkedin" target="_blank" rel="noopener noreferrer"><i data-lucide="linkedin" aria-hidden="true"></i></a>
+            <a href="https://xhslink.cn/o/lloA9W2qlm" class="social-button xhs-button" aria-label="打开小红书主页" data-i18n-aria="openXhs" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">小红书</span></a>
+            <a href="#resume" class="social-button" aria-label="查看我的简历" data-i18n-aria="viewResume"><i data-lucide="file-text" aria-hidden="true"></i></a>
+          </div>
+        </div>
+      </section>
+
+      <div class="sidebar-sticky">
+        <nav class="card side-nav-card reveal" aria-label="页内导航" data-i18n-aria="pageNavigation">
+          <h2 class="side-title"><span class="title-line"></span><span data-i18n="here">在这里</span></h2>
+          <a class="side-link" href="#about" data-section="about"><span><i data-lucide="user-round" aria-hidden="true"></i><span data-i18n="navAbout">关于我</span></span><i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          <a class="side-link" href="#making" data-section="making"><span><i data-lucide="shapes" aria-hidden="true"></i><span data-i18n="navMaking">作品精选</span></span><i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          <a class="side-link" href="#toolbox" data-section="toolbox"><span><i data-lucide="code-xml" aria-hidden="true"></i><span data-i18n="navToolbox">技术与工具</span></span><i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          <a class="side-link" href="#resume" data-section="resume"><span><i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="navResume">简历</span></span><i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          <a class="side-link" href="#interests" data-section="interests"><span><i data-lucide="heart" aria-hidden="true"></i><span data-i18n="navInterests">兴趣</span></span><i data-lucide="chevron-right" aria-hidden="true"></i></a>
+          <a class="side-link" href="#contact" data-section="contact"><span><i data-lucide="send" aria-hidden="true"></i><span data-i18n="navContact">联系</span></span><i data-lucide="chevron-right" aria-hidden="true"></i></a>
+        </nav>
+        <section class="card tags-card reveal">
+          <h2 class="side-title"><span class="title-line"></span><span data-i18n="keywords">一些关键词</span></h2>
+          <div class="tags"><span>UNSW</span><span>IT</span><span>AI</span><span data-i18n="tagPlugins">小插件</span><span data-i18n="tagGames">小游戏</span><span data-i18n="tagFootball">足球</span></div>
+        </section>
+        <div class="sidebar-note"><span class="tiny-star">✦</span><span data-i18n="littleCorner">一个属于自己的小角落。</span></div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section class="card about-card reveal" id="about" aria-labelledby="about-title">
+        <div class="section-eyebrow"><span class="eyebrow-dot"></span> ABOUT ME</div>
+        <h2 class="section-title" id="about-title" data-i18n="aboutHeading">你好，我是 Jefferson。</h2>
+        <div class="meta-row"><span><i data-lucide="graduation-cap" aria-hidden="true"></i> UNSW IT</span><span class="meta-dot" aria-hidden="true">·</span><span data-i18n="aiLearning">人工智能学习中</span></div>
+        <p class="body-copy" data-i18n="aboutText">我正在 UNSW 读 IT 一年级，学习人工智能。<br>喜欢借助 AI 与代码，把日常需要和动漫灵感做成小工具、桌宠、网页游戏与像素视频，在实际项目里边学边做。</p>
+        <div class="about-bottom">
+          <span class="soft-badge"><i data-lucide="code-xml" aria-hidden="true"></i><span data-i18n="maker">AI 协作 · 边学边做</span></span>
+          <span class="about-doodle" aria-hidden="true"><i data-lucide="sparkles"></i><span>{ curious }</span></span>
+        </div>
+        <div class="about-watermark" aria-hidden="true">{ }</div>
+      </section>
+
+      <section class="card portfolio-section reveal" id="making" aria-labelledby="making-title">
+        <div class="section-heading"><div><div class="section-eyebrow"><span class="eyebrow-dot"></span> SELECTED WORK</div><h2 class="section-title" id="making-title" data-i18n="makingHeading">把想法，做成作品。</h2></div><span class="heading-icon" aria-hidden="true"><i data-lucide="shapes"></i></span></div>
+        <p class="section-description" data-i18n="makingDescription">实用的小工具、好玩的网页，和喜欢的动漫世界。</p>
+        <div class="portfolio-grid">
+          <article class="project-card" data-project="quotapet">
+            <div class="project-preview quota-preview"><img src="./assets/projects/quotapet-cover.webp" width="1536" height="864" alt="以 QuotaPet 橙发桌宠形象设计的项目封面" data-i18n-alt="quotaAlt" loading="lazy" decoding="async"><div class="cover-lettering" aria-hidden="true"><span class="cover-kicker">DESKTOP COMPANION</span><span class="cover-title">QuotaPet<span class="cover-subtitle">A little personality.</span></span></div></div>
+            <div class="project-body">
+              <div class="project-meta"><span>MACOS TOOL</span><span class="project-status"><span></span><span data-i18n="publicProject">公开项目</span></span></div>
+              <h3 data-i18n="quotaTitle">QuotaPet · 额度宠物</h3>
+              <p data-i18n="quotaText">把 Claude 和 Codex 的额度信息，做成有表情的 macOS 菜单栏伙伴。</p>
+              <div class="project-tech"><span>Swift</span><span>AppKit</span><span>macOS</span></div>
+              <a class="project-link" href="https://github.com/caihaodong44chd-gif/claude-quota-pet" target="_blank" rel="noopener noreferrer"><i data-lucide="github" aria-hidden="true"></i><span data-i18n="projectHome">项目主页</span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+            </div>
+          </article>
+          <article class="project-card" data-project="reze">
+            <div class="project-preview reze-preview"><img src="./assets/projects/reze-cover.webp" width="1536" height="864" alt="以蕾塞 Reze 桌宠形象设计的紫色项目封面" data-i18n-alt="rezeAlt" loading="lazy" decoding="async"><div class="cover-lettering" aria-hidden="true"><span class="cover-kicker">ANIMATED COMPANION</span><span class="cover-title">Reze<span class="cover-subtitle">A moment of company.</span></span></div></div>
+            <div class="project-body">
+              <div class="project-meta"><span>ANIMATED PET</span><span class="project-status"><span></span><span data-i18n="publicProject">公开项目</span></span></div>
+              <h3 data-i18n="rezeTitle">蕾塞 Reze · 动画桌宠</h3>
+              <p data-i18n="rezeText">为 Codex 制作的非官方同人桌宠，围绕待机、拿花和拔环变身打磨角色动作。</p>
+              <div class="project-tech"><span>Sprite Sheet</span><span>Animation</span></div>
+              <a class="project-link" href="https://github.com/caihaodong44chd-gif/reze-codex-pet-download" target="_blank" rel="noopener noreferrer"><i data-lucide="github" aria-hidden="true"></i><span data-i18n="projectHome">项目主页</span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+            </div>
+          </article>
+          <article class="project-card" data-project="holdem">
+            <div class="project-preview holdem-preview"><img src="./assets/projects/holdem-cover.webp" width="1536" height="864" alt="好友牌桌的纸牌与虚拟筹码主题封面" data-i18n-alt="holdemAlt" loading="lazy" decoding="async"><div class="cover-lettering" aria-hidden="true"><span class="cover-kicker">BROWSER GAME</span><span class="cover-title">Hold'em<br>Friends<span class="cover-subtitle">Meet at the table.</span></span></div></div>
+            <div class="project-body">
+              <div class="project-meta"><span>WEB GAME</span><span class="project-status local-status"><span></span><span data-i18n="localPrototype">本地原型</span></span></div>
+              <h3 data-i18n="holdemTitle">好友牌桌 · 网页小游戏</h3>
+              <p data-i18n="holdemText">浏览器里的德扑练习项目，探索好友房、单人 AI 与牌局记录。仅使用虚拟筹码。</p>
+              <div class="project-tech"><span>JavaScript</span><span>Node.js</span><span>SQLite</span></div>
+              <span class="project-note"><i data-lucide="flask-conical" aria-hidden="true"></i><span data-i18n="prototypeNote">在本地开发与迭代</span></span>
+            </div>
+          </article>
+          <article class="project-card" data-project="pixel-mv">
+            <div class="project-preview pixel-preview"><img src="./assets/projects/pixel-mv-cover.webp" width="1536" height="864" alt="以五条悟像素形象设计的格斗 MV 主题封面" data-i18n-alt="pixelAlt" loading="lazy" decoding="async"><div class="cover-lettering" aria-hidden="true"><span class="cover-kicker">ANIME × ARCADE</span><span class="cover-title">PIXEL<br>FIGHTER<span class="cover-subtitle">Made to the beat.</span></span></div></div>
+            <div class="project-body">
+              <div class="project-meta"><span>PIXEL & VIDEO</span><span class="project-status local-status"><span></span><span data-i18n="creativeExperiment">创作实验</span></span></div>
+              <h3 data-i18n="pixelTitle">像素格斗 MV</h3>
+              <p data-i18n="pixelText">把动漫对决做成街机风格短片，尝试像素角色、分镜与音乐卡点；包括五条悟对伏黑甚尔的创作实验。</p>
+              <div class="project-tech"><span>Python</span><span>Pillow</span><span>Pixel Art</span></div>
+              <span class="project-note"><i data-lucide="clapperboard" aria-hidden="true"></i><span data-i18n="renderNote">代码渲染 · 本地视频作品</span></span>
+            </div>
+          </article>
+        </div>
+        <p class="portfolio-footnote"><i data-lucide="sparkles" aria-hidden="true"></i><span data-i18n="portfolioNote">这些项目都在边做边学，也都有 AI 协作的参与。</span></p>
+      </section>
+
+      <section class="card toolbox-card reveal" id="toolbox" aria-labelledby="toolbox-title">
+        <div class="section-eyebrow"><span class="eyebrow-dot"></span> MY TOOLBOX</div>
+        <h2 class="section-title" id="toolbox-title" data-i18n="toolboxHeading">边学边做的工具箱。</h2>
+        <p class="section-description" data-i18n="toolboxDescription">在这些项目里接触和使用的技术。</p>
+        <div class="toolbox-list">
+          <div class="toolbox-row"><span class="toolbox-icon"><i data-lucide="panels-top-left" aria-hidden="true"></i></span><div><h3 data-i18n="webTools">网页与小游戏</h3><div class="tool-tags"><span>HTML / CSS</span><span>JavaScript</span><span>Node.js</span><span>SQLite</span></div></div></div>
+          <div class="toolbox-row"><span class="toolbox-icon"><i data-lucide="monitor" aria-hidden="true"></i></span><div><h3 data-i18n="desktopTools">桌面与小工具</h3><div class="tool-tags"><span>Swift</span><span>AppKit</span><span>macOS</span></div></div></div>
+          <div class="toolbox-row"><span class="toolbox-icon"><i data-lucide="palette" aria-hidden="true"></i></span><div><h3 data-i18n="visualTools">图像与动画</h3><div class="tool-tags"><span>Python</span><span>Pillow</span><span>NumPy</span><span>Sprite Sheets</span></div></div></div>
+        </div>
+      </section>
+
+      <section class="card resume-card reveal" id="resume" aria-labelledby="resume-title">
+        <div class="section-heading"><div><div class="section-eyebrow"><span class="eyebrow-dot"></span> MY RESUME</div><h2 class="section-title" id="resume-title" data-i18n="resumeHeading">更多关于我的经历。</h2></div><span class="heading-icon" aria-hidden="true"><i data-lucide="file-text"></i></span></div>
+        <p class="section-description" data-i18n="resumeDescription">教育背景、工作经历与技术积累，整理在这一页。</p>
+        <div class="resume-actions">
+          <a class="resume-action primary-action" id="resume-download" href="./assets/resume/resume-zh.pdf" download="Jefferson-Cai-Resume-ZH.pdf"><i data-lucide="download" aria-hidden="true"></i><span data-i18n="downloadResume">下载简历</span><span class="action-format">PDF</span></a>
+          <a class="resume-action" id="resume-open" href="./assets/resume/resume-zh.pdf" target="_blank" rel="noopener noreferrer"><span data-i18n="openResume">打开 PDF</span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="resume-document">
+          <div class="resume-toolbar"><span><i data-lucide="file-text" aria-hidden="true"></i><span data-i18n="resumeFilename">中文简历 · 蔡灏东</span></span><span data-i18n="resumePages">PDF · 1 页</span></div>
+          <div class="resume-viewer" role="region" tabindex="0" aria-label="简历整页预览" data-i18n-aria="resumePreviewLabel" aria-describedby="resume-hint"><img id="resume-preview-image" src="./assets/resume/resume-zh.webp" width="1415" height="2000" alt="蔡灏东的中文简历整页预览" data-i18n-alt="resumePreviewAlt" loading="lazy" decoding="async"></div>
+        </div>
+        <p class="resume-hint" id="resume-hint"><i data-lucide="scan-eye" aria-hidden="true"></i><span data-i18n="resumeHint">可滚动查看整页；打开 PDF 后可放大阅读。中 / EN 会同步切换简历语言。</span></p>
+      </section>
+
+      <section class="card interests-card reveal" id="interests" aria-labelledby="interests-title">
+        <div class="section-eyebrow"><span class="eyebrow-dot"></span> BEYOND THE SCREEN</div>
+        <h2 class="section-title" id="interests-title" data-i18n="interestsHeading">代码之外，也有热爱。</h2>
+        <div class="interest-grid">
+          <div class="interest-item"><div class="interest-art football-art" aria-hidden="true"><svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="28"></circle><path d="m36 24 12 9-5 14H29l-5-14Z" class="ball-fill"></path><path d="m36 24 1-16M48 33l15-5M43 47l9 13M29 47l-9 13M24 33 9 28M17 17l12 1M55 17l-11 1M64 44l-5 9M36 64v-6M8 44l5 9"></path></svg><span class="art-orbit"></span></div><h3 data-i18n="football">足球</h3><span>FOOTBALL</span></div>
+          <div class="interest-item"><div class="interest-art game-art" aria-hidden="true"><i data-lucide="gamepad-2"></i><span class="game-spark">✦</span></div><h3 data-i18n="gaming">游戏</h3><span>GAMING</span></div>
+          <div class="interest-item"><div class="interest-art pool-art" aria-hidden="true"><span class="pool-ball"><span>8</span></span><span class="pool-cue"></span></div><h3 data-i18n="billiards">台球</h3><span>BILLIARDS</span></div>
+          <div class="interest-item"><div class="interest-art anime-art" aria-hidden="true"><i data-lucide="tv-minimal-play"></i><span class="anime-spark">✦</span></div><h3 data-i18n="anime">动漫</h3><span>ANIME</span></div>
+        </div>
+        <div class="anime-favorites">
+          <h3 id="anime-favorites-title"><i data-lucide="sparkles" aria-hidden="true"></i><span data-i18n="animeFavorites">喜欢的动漫</span></h3>
+          <ul class="anime-list" aria-labelledby="anime-favorites-title">
+            <li data-i18n="animeBluelock">蓝色监狱</li>
+            <li data-i18n="animeAot">进击的巨人</li>
+            <li data-i18n="animeOnePiece">海贼王</li>
+            <li data-i18n="animeEva">EVA</li>
+            <li data-i18n="animeJjk">咒术回战</li>
+            <li data-i18n="animeGrandBlue">碧蓝之海</li>
+            <li data-i18n="animeConan">名侦探柯南</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card contact-card reveal" id="contact" aria-labelledby="contact-title">
+        <div class="section-heading"><div><div class="section-eyebrow"><span class="eyebrow-dot"></span> SAY HELLO</div><h2 class="section-title" id="contact-title" data-i18n="contactHeading">很高兴，在这里遇见你。</h2></div><span class="contact-spark" aria-hidden="true">✳</span></div>
+        <p class="section-description" data-i18n="contactDescription">聊聊游戏、网页，或者只是打个招呼。</p>
+        <div class="contact-list">
+          <div class="contact-row"><span class="contact-icon"><i data-lucide="mail" aria-hidden="true"></i></span><div class="contact-detail"><span class="contact-label" data-i18n="email">电子邮箱</span><a href="mailto:caihaodong44chd@gmail.com">caihaodong44chd@gmail.com</a></div><button type="button" class="icon-button copy-button" id="copy-email" data-copy="caihaodong44chd@gmail.com" aria-label="复制邮箱" data-i18n-aria="copyEmail"><i data-lucide="copy" aria-hidden="true"></i></button></div>
+          <div class="contact-row"><span class="contact-icon"><i data-lucide="linkedin" aria-hidden="true"></i></span><div class="contact-detail"><span class="contact-label">LinkedIn</span><a href="https://www.linkedin.com/in/%E7%81%8F%E4%B8%9C-%E8%94%A1-1385b743b/" target="_blank" rel="noopener noreferrer" aria-label="打开 LinkedIn 主页" data-i18n-aria="openLinkedin">Haodong Cai</a></div><a class="icon-button contact-external" href="https://www.linkedin.com/in/%E7%81%8F%E4%B8%9C-%E8%94%A1-1385b743b/" target="_blank" rel="noopener noreferrer" aria-label="打开 LinkedIn 主页" data-i18n-aria="openLinkedin"><i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
+          <div class="contact-row"><span class="contact-icon xhs-icon" aria-hidden="true">红</span><div class="contact-detail"><span class="contact-label" data-i18n="xiaohongshu">小红书</span><a href="https://xhslink.cn/o/lloA9W2qlm" target="_blank" rel="noopener noreferrer" aria-label="打开小红书主页" data-i18n-aria="openXhs">chd · 5569016579 <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div><button type="button" class="icon-button copy-button" id="copy-xhs" data-copy="5569016579" aria-label="复制小红书号 5569016579" data-i18n-aria="copyXhs"><i data-lucide="copy" aria-hidden="true"></i></button></div>
+        </div>
+        <a class="email-cta" href="mailto:caihaodong44chd@gmail.com"><span data-i18n="writeEmail">给我写封邮件</span><i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+      </section>
+
+      <footer class="site-footer">
+        <p>© 2026 Jefferson Cai<span class="footer-dot">·</span><span data-i18n="footerNote">保持好奇，继续创造。</span></p>
+        <p class="footer-credit"><span data-i18n="inspiredBy">设计灵感来自</span> <a href="https://github.com/saicaca/fuwari" target="_blank" rel="noopener noreferrer">Fuwari<i data-lucide="arrow-up-right" aria-hidden="true"></i></a><span class="footer-star" aria-hidden="true">✦</span></p>
+      </footer>
+    </main>
+  </div>
+  <a class="back-to-top icon-button" id="back-to-top" href="#home" aria-label="回到顶部" data-i18n-aria="backTop"><i data-lucide="arrow-up" aria-hidden="true"></i></a>
+  <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+  <noscript><p class="noscript-note">可以直接阅读此页面；语言切换和配色设置需要启用 JavaScript。 / Enable JavaScript for language and appearance controls.</p></noscript>
+</body>
+</html>

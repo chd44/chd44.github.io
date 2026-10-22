@@ -1,0 +1,20 @@
+{
+  "name": "jefferson-cai-homepage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jefferson Cai 的双语个人主页，支持离线打开和 GitHub Pages。",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "preview": "node scripts/serve.mjs dist",
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "gsap": "3.15.0",
+    "lucide": "0.468.0"
+  },
+  "devDependencies": {
+    "jsdom": "30.1.3"
+  },
+  "engines": { "node": ">=22.13" }
+}
