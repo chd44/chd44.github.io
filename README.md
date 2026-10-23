@@ -2,7 +2,7 @@
 
 中英双语个人主页与作品集，使用 BLUE LOCK 主题、原创项目封面，以及已确认公开的社交联系方式和中英简历。
 
-在线访问：https://caihaodong44chd-gif.github.io/
+在线访问：https://chd44.github.io/
 
 ## 内容与功能
 
