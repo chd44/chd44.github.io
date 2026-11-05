@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#071a1b">
+  <title>好友牌桌 · Hold'em Friends</title>
+  <meta name="description" content="浏览器里的德州扑克练习：和打法各异的 AI 对手练手，或者开好友房一起玩。附带练习助手和牌局记录，只用虚拟筹码。">
+  <link rel="canonical" href="https://chd44.github.io/holdem/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Jefferson Cai">
+  <meta property="og:url" content="https://chd44.github.io/holdem/">
+  <meta property="og:title" content="好友牌桌 · Hold'em Friends">
+  <meta property="og:description" content="和 AI 练德扑，或者开个房间和朋友一起玩。只用虚拟筹码。Practise Texas Hold'em against AI or play with friends — virtual chips only.">
+  <meta property="og:image" content="https://chd44.github.io/assets/projects/holdem-cover.webp">
+  <meta property="og:image:width" content="1199">
+  <meta property="og:image:height" content="675">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://chd44.github.io/assets/projects/holdem-cover.webp">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d4a43'/%3E%3Cpath d='M32 10C24 22 14 27 14 37a9 9 0 0 0 15 6.7L26 54h12l-3-10.3A9 9 0 0 0 50 37c0-10-10-15-18-27Z' fill='%23f4ecd8'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="skip">跳到主要内容</a>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="好友牌桌" data-i18n-aria="brand"><span class="brand-mark" aria-hidden="true">♠&#xFE0E;</span><span data-i18n="brand">好友牌桌</span></a>
+    <div class="topbar-tools">
+      <a class="home-link" href="../" data-i18n="backHome">Jefferson 的主页</a>
+      <div class="lang-switch" role="group" aria-label="语言" data-i18n-aria="language">
+        <button type="button" data-lang="zh" aria-pressed="true">中</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <button type="button" class="icon-btn" id="open-settings" aria-label="设置" data-i18n-aria="settingsTitle">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 大厅 -->
+    <section class="screen lobby" id="screen-lobby" aria-labelledby="lobby-title">
+      <div class="lobby-hero">
+        <div class="hero-cards" id="hero-cards" aria-hidden="true"></div>
+        <p class="kicker" data-i18n="heroKicker">HOLD'EM FRIENDS</p>
+        <h1 id="lobby-title" data-i18n="heroTitle">好友牌桌</h1>
+        <p class="lobby-text" data-i18n="heroText">和 AI 对手练手，或者开个房间和朋友一起玩。只用虚拟筹码，不涉及任何真钱。</p>
+      </div>
+      <div class="mode-grid">
+        <button type="button" class="mode-card primary" id="go-solo">
+          <span class="mode-icon" aria-hidden="true">♠&#xFE0E;</span>
+          <span class="mode-title" data-i18n="soloTitle">单人练习</span>
+          <span class="mode-text" data-i18n="soloText">和 1～7 个打法各异的 AI 对手同桌，附带练习助手和牌局记录。</span>
+        </button>
+        <button type="button" class="mode-card" id="go-host">
+          <span class="mode-icon" aria-hidden="true">♥&#xFE0E;</span>
+          <span class="mode-title" data-i18n="hostTitle">创建好友房</span>
+          <span class="mode-text" data-i18n="hostText">生成房间码发给朋友，打开链接就能入座，不用注册。</span>
+        </button>
+        <button type="button" class="mode-card" id="go-join">
+          <span class="mode-icon" aria-hidden="true">♦&#xFE0E;</span>
+          <span class="mode-title" data-i18n="joinTitle">加入好友房</span>
+          <span class="mode-text" data-i18n="joinText">输入朋友给你的 6 位房间码。</span>
+        </button>
+      </div>
+      <div class="lobby-links">
+        <button type="button" class="text-btn" id="go-history" data-i18n="historyTitle">牌局记录</button>
+        <span aria-hidden="true">·</span>
+        <button type="button" class="text-btn" id="go-rules" data-i18n="rulesTitle">玩法说明</button>
+      </div>
+      <p class="lobby-note" data-i18n="lobbyNote">非官方练习项目 · 仅虚拟筹码 · 好友房通过 WebRTC 点对点连接</p>
+    </section>
+
+    <!-- 牌桌 -->
+    <section class="screen table-screen" id="screen-table" hidden aria-labelledby="table-title">
+      <h1 class="sr-only" id="table-title" data-i18n="tableTitle">好友牌桌 · 牌桌</h1>
+      <div class="table-bar">
+        <button type="button" class="chip-btn" id="leave-table">←<span data-i18n="leave">离开</span></button>
+        <div class="table-info" id="table-info"></div>
+        <div class="table-tools">
+          <button type="button" class="chip-btn toggle" id="toggle-helper" aria-pressed="false"><span data-i18n="helperShort">助手</span></button>
+          <button type="button" class="chip-btn toggle" id="toggle-log" aria-pressed="false"><span data-i18n="log">记录</span></button>
+        </div>
+      </div>
+      <div class="room-strip" id="room-strip" hidden>
+        <span class="room-label" data-i18n="roomCode">房间码</span>
+        <strong class="room-code" id="room-code"></strong>
+        <button type="button" class="chip-btn" id="copy-invite" data-i18n="copyLink">复制邀请链接</button>
+        <span class="room-status" id="room-status" role="status"></span>
+      </div>
+      <div class="table-layout">
+        <div class="stage" id="stage">
+          <div class="felt" id="felt">
+            <div class="felt-mark" aria-hidden="true">HOLD'EM FRIENDS</div>
+            <div class="center">
+              <div class="pot" id="pot" aria-live="off"></div>
+              <div class="board" id="board" role="group" aria-label="公共牌" data-i18n-aria="board"></div>
+              <div class="result-line" id="result-line" aria-live="polite"></div>
+            </div>
+            <div class="seats" id="seats"></div>
+          </div>
+        </div>
+        <div class="side-panel" id="side-panel">
+          <section class="helper" id="helper" hidden aria-labelledby="helper-title">
+            <h2 id="helper-title" data-i18n="helper">练习助手</h2>
+            <div id="helper-body"></div>
+          </section>
+          <section class="feed" id="feed" hidden aria-labelledby="feed-title">
+            <h2 id="feed-title" data-i18n="log">记录</h2>
+            <ol id="feed-list"></ol>
+          </section>
+        </div>
+      </div>
+      <div class="action-bar" id="action-bar">
+        <div class="status-line" id="status-line" role="status"></div>
+        <div class="actions" id="actions" hidden>
+          <button type="button" class="act fold" id="act-fold"></button>
+          <button type="button" class="act call" id="act-call"></button>
+          <button type="button" class="act raise" id="act-raise"></button>
+        </div>
+        <div class="raise-panel" id="raise-panel" hidden>
+          <div class="presets" id="presets"></div>
+          <div class="raise-row">
+            <input type="range" id="raise-slider" aria-label="金额" data-i18n-aria="amount">
+            <input type="number" id="raise-input" inputmode="numeric" aria-label="金额" data-i18n-aria="amount">
+          </div>
+          <div class="raise-confirm">
+            <button type="button" class="act ghost" id="raise-cancel" data-i18n="cancel">取消</button>
+            <button type="button" class="act raise" id="raise-go"></button>
+          </div>
+        </div>
+        <div class="extra-actions" id="extra-actions"></div>
+      </div>
+      <div class="overlay" id="overlay" hidden><div class="overlay-card" id="overlay-card" role="dialog" aria-modal="false" aria-labelledby="overlay-title"></div></div>
+    </section>
+
+    <!-- 牌局记录 -->
+    <section class="screen history-screen" id="screen-history" hidden aria-labelledby="history-title">
+      <div class="page-head">
+        <button type="button" class="chip-btn" id="history-back">←<span data-i18n="back">返回</span></button>
+        <h1 id="history-title" data-i18n="historyTitle">牌局记录</h1>
+      </div>
+      <div class="stats" id="stats"></div>
+      <p class="hint" data-i18n="historyHint">记录只保存在这台设备的浏览器里，最多保留最近 200 手。</p>
+      <div class="history-layout">
+        <ol class="history-list" id="history-list"></ol>
+        <article class="history-detail" id="history-detail" aria-live="polite"></article>
+      </div>
+      <div class="history-actions">
+        <button type="button" class="chip-btn" id="history-export" data-i18n="export">导出文本</button>
+        <button type="button" class="chip-btn danger" id="history-clear" data-i18n="clearHistory">清空记录</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- 单人练习设置 -->
+  <dialog id="dialog-solo" aria-labelledby="solo-title">
+    <form method="dialog" class="dialog-form" id="form-solo">
+      <h2 id="solo-title" data-i18n="soloTitle">单人练习</h2>
+      <label class="field"><span data-i18n="yourName">你的名字</span><input name="name" maxlength="16" autocomplete="nickname" data-i18n-placeholder="namePlaceholder"></label>
+      <label class="field"><span data-i18n="opponents">AI 对手</span>
+        <span class="range-row"><input type="range" name="bots" min="1" max="7" value="5"><output name="botsOut">5</output></span></label>
+      <fieldset class="field"><legend data-i18n="difficulty">难度</legend>
+        <div class="segmented">
+          <label><input type="radio" name="difficulty" value="easy"><span data-i18n="easy">轻松</span></label>
+          <label><input type="radio" name="difficulty" value="normal" checked><span data-i18n="normal">标准</span></label>
+          <label><input type="radio" name="difficulty" value="hard"><span data-i18n="hard">挑战</span></label>
+        </div>
+      </fieldset>
+      <fieldset class="field"><legend data-i18n="mode">玩法</legend>
+        <div class="stack-options">
+          <label><input type="radio" name="mode" value="cash" checked><span data-i18n="modeCash">练习桌（输光可补码）</span></label>
+          <label><input type="radio" name="mode" value="tournament"><span data-i18n="modeTournament">淘汰赛（盲注每 8 手上涨）</span></label>
+        </div>
+      </fieldset>
+      <div class="field-row">
+        <label class="field"><span data-i18n="startingStack">起始筹码</span>
+          <select name="stack"><option value="1000">1,000</option><option value="2000" selected>2,000</option><option value="5000">5,000</option></select></label>
+        <label class="field"><span data-i18n="blinds">盲注</span>
+          <select name="blinds"><option value="5/10">5 / 10</option><option value="10/20" selected>10 / 20</option><option value="25/50">25 / 50</option></select></label>
+      </div>
+      <p class="fine" data-i18n="virtualOnly">只用虚拟筹码，不能充值，也没有任何奖励。</p>
+      <div class="dialog-actions">
+        <button type="button" class="chip-btn" value="cancel" data-close data-i18n="cancel">取消</button>
+        <button type="submit" class="act raise" value="ok" data-i18n="start">开始</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 创建好友房 -->
+  <dialog id="dialog-host" aria-labelledby="host-title">
+    <form method="dialog" class="dialog-form" id="form-host">
+      <h2 id="host-title" data-i18n="hostTitle">创建好友房</h2>
+      <label class="field"><span data-i18n="yourName">你的名字</span><input name="name" maxlength="16" autocomplete="nickname" required data-i18n-placeholder="namePlaceholder"></label>
+      <div class="field-row">
+        <label class="field"><span data-i18n="seats">座位数</span>
+          <select name="seats"><option>2</option><option>3</option><option>4</option><option>5</option><option selected>6</option><option>7</option><option>8</option></select></label>
+        <label class="field"><span data-i18n="turnTimer">每步限时</span>
+          <select name="timer"><option value="20">20</option><option value="30" selected>30</option><option value="60">60</option><option value="0" data-i18n="noLimit">不限时</option></select></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span data-i18n="startingStack">起始筹码</span>
+          <select name="stack"><option value="1000">1,000</option><option value="2000" selected>2,000</option><option value="5000">5,000</option></select></label>
+        <label class="field"><span data-i18n="blinds">盲注</span>
+          <select name="blinds"><option value="5/10">5 / 10</option><option value="10/20" selected>10 / 20</option><option value="25/50">25 / 50</option></select></label>
+      </div>
+      <label class="check"><input type="checkbox" name="helper" checked><span data-i18n="allowHelper">允许大家用练习助手</span></label>
+      <p class="fine" data-i18n="hostKeepOpen">你是房主：牌局在你的浏览器里运行，关掉这个页面房间就结束了。</p>
+      <p class="form-error" id="host-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="chip-btn" data-close data-i18n="cancel">取消</button>
+        <button type="submit" class="act raise" data-i18n="create">创建房间</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 加入好友房 -->
+  <dialog id="dialog-join" aria-labelledby="join-title">
+    <form method="dialog" class="dialog-form" id="form-join">
+      <h2 id="join-title" data-i18n="joinTitle">加入好友房</h2>
+      <label class="field"><span data-i18n="roomCode">房间码</span><input name="code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" required class="code-input" data-i18n-placeholder="roomCodePlaceholder"></label>
+      <label class="field"><span data-i18n="yourName">你的名字</span><input name="name" maxlength="16" autocomplete="nickname" required data-i18n-placeholder="namePlaceholder"></label>
+      <p class="form-error" id="join-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="chip-btn" data-close data-i18n="cancel">取消</button>
+        <button type="submit" class="act raise" data-i18n="join">加入</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 玩法说明 -->
+  <dialog id="dialog-rules" aria-labelledby="rules-title" class="wide">
+    <div class="dialog-form">
+      <h2 id="rules-title" data-i18n="rulesTitle">玩法说明</h2>
+      <p data-i18n="rulesIntro">每人两张底牌，加上五张公共牌，用其中任意五张组成最大的牌型。</p>
+      <h3 data-i18n="rulesRanking">牌型从大到小</h3>
+      <ol class="ranking" id="ranking"></ol>
+      <h3 data-i18n="rulesTerms">常用说法</h3>
+      <ul class="terms">
+        <li data-i18n="termBlinds"></li><li data-i18n="termCall"></li><li data-i18n="termRaise"></li>
+        <li data-i18n="termAllIn"></li><li data-i18n="termSidePot"></li><li data-i18n="termPosition"></li>
+      </ul>
+      <div class="dialog-actions"><button type="button" class="act raise" data-close data-i18n="close">关闭</button></div>
+    </div>
+  </dialog>
+
+  <!-- 设置 -->
+  <dialog id="dialog-settings" aria-labelledby="settings-title">
+    <form method="dialog" class="dialog-form" id="form-settings">
+      <h2 id="settings-title" data-i18n="settingsTitle">设置</h2>
+      <label class="check"><input type="checkbox" name="fourColor"><span data-i18n="fourColor">四色牌（方块蓝、梅花绿）</span></label>
+      <label class="check"><input type="checkbox" name="helper"><span data-i18n="helperDefault">默认打开练习助手</span></label>
+      <fieldset class="field"><legend data-i18n="botSpeed">AI 出牌速度</legend>
+        <div class="segmented">
+          <label><input type="radio" name="speed" value="fast"><span data-i18n="speedFast">快</span></label>
+          <label><input type="radio" name="speed" value="normal" checked><span data-i18n="speedNormal">正常</span></label>
+          <label><input type="radio" name="speed" value="slow"><span data-i18n="speedSlow">慢</span></label>
+        </div>
+      </fieldset>
+      <div class="dialog-actions"><button type="submit" class="act raise" data-i18n="close">关闭</button></div>
+    </form>
+  </dialog>
+
+  <div class="sr-only" id="announcer" aria-live="assertive" aria-atomic="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript" data-i18n="noscript">这个小游戏需要启用 JavaScript。 / This game needs JavaScript.</p></noscript>
+</body>
+</html>

@@ -12,6 +12,10 @@ Copyright © GreenSock / Webflow. Distributed under the [GSAP Standard License](
 
 [Lucide](https://lucide.dev) is used for interface icons under the ISC License. The complete notice is included at vendor/LUCIDE-LICENSE.txt.
 
+## PeerJS 1.5.4
+
+The Hold'em Friends game (`holdem/`) uses [PeerJS](https://peerjs.com) for peer-to-peer friend rooms, under the MIT License. The complete notice is included at holdem/vendor/PEERJS-LICENSE.txt. Friend rooms use the free public PeerJS signalling server (0.peerjs.com) and, when a direct connection fails, PeerJS's public TURN relays; game data travels between the players' browsers. Solo play loads nothing from third parties.
+
 ## Artwork
 
 The avatar was supplied by the site owner and depicts BLUE LOCK artwork. BLUE LOCK and its original characters and visual identity belong to their respective rights holders. This is a personal fan-inspired theme and does not claim official affiliation.

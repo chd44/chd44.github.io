@@ -2,6 +2,7 @@
   "name": "jefferson-cai-homepage",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Jefferson Cai 的双语个人主页，支持离线打开和 GitHub Pages。",
   "scripts": {
     "dev": "node scripts/serve.mjs",

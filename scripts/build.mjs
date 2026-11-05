@@ -13,5 +13,6 @@ for (const name of ['assets/banner.webp', 'assets/avatar.webp', 'assets/og-image
 }
 await rm(destination, { recursive: true, force: true });
 await mkdir(destination, { recursive: true });
+await cp(path.join(root, 'holdem'), path.join(destination, 'holdem'), { recursive: true });  // 好友牌桌在线版
 for (const name of files) await cp(path.join(root, name), path.join(destination, name), { recursive: true });
 console.log('Built dist/ — standalone static site, GitHub Pages subpaths supported.');
