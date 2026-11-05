@@ -45,7 +45,7 @@
       copiedEmail: '邮箱已复制', copiedXhs: '小红书号已复制：5569016579',
       copyManually: '暂时无法自动复制，请长按或选中文字后手动复制。',
       title: 'Jefferson Cai · 个人主页',
-      description: 'Jefferson Cai 的个人主页与作品集。UNSW IT 一年级，学习人工智能，用 AI 协作探索小工具、桌宠、网页小游戏和像素视频。'
+      description: '你好，我是 Jefferson，在 UNSW 读 IT 一年级，正在学人工智能。这里放着我借助 AI 和代码做的小东西：会提醒 AI 额度的菜单栏宠物 QuotaPet、蕾塞 Codex 桌宠、能和朋友在线玩的德扑小游戏「好友牌桌」，还有几支像素格斗 MV。'
     },
     en: {
       skip: 'Skip to main content', navHome: 'Home', navAbout: 'About', navInterests: 'Interests', navContact: 'Contact', navMaking: 'Selected work', navWorks: 'Work', navToolbox: 'My toolbox',
@@ -91,7 +91,7 @@
       copiedEmail: 'Email address copied', copiedXhs: 'Xiaohongshu ID copied: 5569016579',
       copyManually: 'Unable to copy automatically. Please select the text and copy it manually.',
       title: 'Jefferson Cai · Personal Space',
-      description: 'Jefferson Cai, a first-year IT student at UNSW studying AI. A personal portfolio of AI-assisted tools, desktop companions, web games and pixel videos.'
+      description: "Hi, I'm Jefferson, a first-year IT student at UNSW learning AI. This is where I keep the little things I make with AI and code: QuotaPet, a menu bar pet that keeps an eye on your AI usage; a Reze pet for Codex; Hold'em Friends, a poker game to play online with friends; and a few pixel-art fighting music videos."
     }
   };
   const root = document.documentElement;

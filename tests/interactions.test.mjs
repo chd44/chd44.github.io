@@ -183,3 +183,20 @@ test('share metadata points at real files and the 404 page links home absolutely
   assert.equal(notFound.window.document.querySelector('a').getAttribute('href'), '/');
   dom.window.close(); notFound.window.close();
 });
+
+// Catches a description too short for share previews (LinkedIn warns under 100 characters), and a
+// static description that the language script then swaps for different text in the browser.
+test('page descriptions are long enough for share previews and match the language dictionary', async () => {
+  const fresh = new JSDOM(html).window.document;
+  const staticDescription = fresh.querySelector('meta[name="description"]').content;
+  assert.ok(Array.from(staticDescription).length >= 100, 'meta description has at least 100 characters');
+  assert.equal(fresh.querySelector('meta[property="og:description"]').content, staticDescription);
+  assert.equal(fresh.querySelector('meta[name="author"]')?.content, 'Jefferson Cai', 'share previews can show the author');
+  const page = await boot();
+  const meta = selector => page.document.querySelector(selector).content;
+  assert.equal(meta('meta[name="description"]'), staticDescription, 'the Chinese script text equals the static text');
+  page.document.querySelector('[data-language="en"]').click();
+  assert.ok(Array.from(meta('meta[property="og:description"]')).length >= 100, 'English description has at least 100 characters');
+  assert.equal(meta('meta[name="description"]'), meta('meta[property="og:description"]'));
+  page.dom.window.close();
+});
