@@ -17,9 +17,15 @@ assets/resume/resume-zh.pdf 与 resume-en.pdf 来自用户本地的中、英文�
 
 ## 头像
 
-路径：assets/avatar.jpg
+路径：assets/avatar.jpg（原图）、assets/avatar.webp（网页显示用）
 
-使用你提供的原始 JPG，没有改变角色、表情或配色。页面仅通过 CSS 控制展示尺寸与裁切。
+avatar.jpg 是你提供的原始 JPG（1152 × 1152），没有改变角色、表情或配色，结构化数据里引用它。页面上头像最大只显示 250 像素宽，所以网页显示的是缩小到 512 × 512 的 WebP 副本（约 50 KB，原图约 310 KB），只做了缩放和格式转换。页面仅通过 CSS 控制展示尺寸与裁切。
+
+## 分享预览图
+
+路径：assets/og-image.jpg
+
+1200 × 630，链接分享时的预览卡片。用 assets/banner.webp 作底图，在浏览器里按网页横幅的样式叠上 HTML 文字（Inter 字体）后截图，再压缩为 JPEG。没有用图像生成工具，也没有改动横幅画面本身。
 
 ## 最终横幅
 

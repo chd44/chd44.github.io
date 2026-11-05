@@ -126,3 +126,60 @@ test('resume preview and PDF links follow the selected and saved language', asyn
   await readFile(new URL(reloaded.document.querySelector('#resume-download').getAttribute('href'), root));
   reloaded.dom.window.close(); page.dom.window.close();
 });
+
+// Catches an icon added to index.html without regenerating the subset (npm run icons):
+// it would silently render as an empty <i> on the live site.
+test('every data-lucide icon in index.html is in the bundled subset and renders as SVG', async () => {
+  const subset = await readFile(new URL('vendor/lucide-icons.js', root), 'utf8');
+  const dom = new JSDOM(html, { runScripts: 'outside-only' });
+  const warnings = [];
+  dom.window.console.warn = message => warnings.push(message);
+  dom.window.eval(subset);
+  const used = [...new Set([...html.matchAll(/data-lucide="([^"]+)"/g)].map(match => match[1]))];
+  const missing = used.filter(name => !dom.window.lucide.icons.includes(name));
+  assert.deepEqual(missing, [], 'Run npm run icons to add: ' + missing.join(', '));
+  dom.window.lucide.createIcons({ attrs: { 'stroke-width': 1.8, 'aria-hidden': 'true' } });
+  assert.deepEqual(warnings, []);
+  assert.equal(dom.window.document.querySelectorAll('i[data-lucide]').length, 0);
+  const house = dom.window.document.querySelector('.brand-icon svg');
+  assert.equal(house.getAttribute('class'), 'lucide lucide-house');
+  assert.equal(house.getAttribute('stroke-width'), '1.8');
+  assert.ok(house.querySelector('path'));
+  dom.window.close();
+});
+
+// Catches a pre-paint script that disagrees with app.js and flashes or keeps the wrong theme.
+test('the inline pre-paint script applies a saved dark theme and accent before app.js runs', async () => {
+  const inline = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]);
+  assert.equal(inline.length, 1);
+  for (const [stored, theme, hue] of [
+    ['{"mode":"dark","hue":285}', 'dark', '285'],
+    ['{"mode":"light","hue":160}', 'light', '160'],
+    ['{"mode":"purple","hue":"oops"}', 'light', ''],
+    ['broken json', 'light', '']
+  ]) {
+    const dom = new JSDOM(html, { url: 'https://example.test/', runScripts: 'outside-only' });
+    dom.window.matchMedia = () => ({ matches: false });
+    dom.window.localStorage.setItem('jefferson.preferences', stored);
+    dom.window.eval(inline[0]);
+    assert.equal(dom.window.document.documentElement.dataset.theme, theme, stored);
+    assert.equal(dom.window.document.documentElement.style.getPropertyValue('--hue'), hue, stored);
+    dom.window.close();
+  }
+});
+
+// Catches broken share previews (missing image) and a 404 page whose link 404s again on nested paths.
+test('share metadata points at real files and the 404 page links home absolutely', async () => {
+  const dom = new JSDOM(html);
+  const meta = property => dom.window.document.querySelector(`meta[property="${property}"], meta[name="${property}"]`)?.content;
+  for (const key of ['og:image', 'twitter:image']) {
+    const url = new URL(meta(key));
+    assert.equal(url.origin, 'https://chd44.github.io');
+    await readFile(new URL('.' + url.pathname, root));
+  }
+  assert.equal(meta('twitter:card'), 'summary_large_image');
+  JSON.parse(dom.window.document.querySelector('script[type="application/ld+json"]').textContent);
+  const notFound = new JSDOM(await readFile(new URL('404.html', root), 'utf8'));
+  assert.equal(notFound.window.document.querySelector('a').getAttribute('href'), '/');
+  dom.window.close(); notFound.window.close();
+});

@@ -7,15 +7,52 @@
   <meta name="theme-color" content="#f0f3fa">
   <title>Jefferson Cai · 个人主页</title>
   <meta name="description" content="Jefferson Cai 的个人主页与作品集。UNSW IT 一年级，学习人工智能，用 AI 协作探索小工具、桌宠、网页小游戏和像素视频。">
+  <link rel="canonical" href="https://chd44.github.io/">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Jefferson Cai">
+  <meta property="og:url" content="https://chd44.github.io/">
   <meta property="og:title" content="Jefferson Cai · Personal Space">
   <meta property="og:description" content="Jefferson Cai 的双语作品集：QuotaPet、蕾塞桌宠、网页小游戏与像素格斗 MV。UNSW IT · AI 协作 · 边学边做。">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image" content="https://chd44.github.io/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Jefferson Cai · Code, games and imagination, over a dark blue chain-and-puzzle banner">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://chd44.github.io/assets/og-image.jpg">
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
   <link rel="preload" as="image" href="./assets/banner.webp" fetchpriority="high">
+  <script>
+    // Apply the saved theme before first paint, so returning dark-mode visitors don't see a light flash.
+    // Must accept the same values as app.js; app.js re-applies everything once it loads.
+    try {
+      const saved = JSON.parse(localStorage.getItem('jefferson.preferences') || '{}') || {};
+      const dark = saved.mode === 'dark' || (saved.mode === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) document.documentElement.dataset.theme = 'dark';
+      if (typeof saved.hue === 'number' && saved.hue >= 0 && saved.hue <= 359) document.documentElement.style.setProperty('--hue', String(Math.round(saved.hue)));
+    } catch { /* No saved preferences: keep the defaults. */ }
+  </script>
   <link rel="stylesheet" href="./styles.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Jefferson Cai",
+    "alternateName": ["Haodong Cai", "蔡灏东"],
+    "url": "https://chd44.github.io/",
+    "image": "https://chd44.github.io/assets/avatar.jpg",
+    "email": "mailto:caihaodong44chd@gmail.com",
+    "affiliation": { "@type": "CollegeOrUniversity", "name": "UNSW Sydney", "url": "https://www.unsw.edu.au/" },
+    "knowsAbout": ["Artificial intelligence", "JavaScript", "Swift", "Python", "Pixel art"],
+    "sameAs": [
+      "https://github.com/chd44",
+      "https://www.linkedin.com/in/%E7%81%8F%E4%B8%9C-%E8%94%A1-1385b743b/"
+    ]
+  }
+  </script>
   <script src="./vendor/gsap.min.js" defer></script>
-  <script src="./vendor/lucide.min.js" defer></script>
+  <script src="./vendor/lucide-icons.js" defer></script>
   <script src="./app.js" defer></script>
 </head>
 <body>
@@ -102,7 +139,7 @@
   <div class="page-grid" id="main-content">
     <aside class="sidebar" aria-label="个人资料" data-i18n-aria="profileLabel">
       <section class="card profile-card reveal">
-        <div class="avatar-frame"><img src="./assets/avatar.jpg" alt="Jefferson 选择的 BLUE LOCK 动漫头像" data-i18n-alt="avatarAlt" width="1152" height="1152" decoding="async"></div>
+        <div class="avatar-frame"><img src="./assets/avatar.webp" alt="Jefferson 选择的 BLUE LOCK 动漫头像" data-i18n-alt="avatarAlt" width="512" height="512" decoding="async"></div>
         <div class="profile-details">
           <p class="profile-overline">HELLO, WORLD</p>
           <h2>Jefferson Cai</h2>
