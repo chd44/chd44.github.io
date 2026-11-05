@@ -73,7 +73,8 @@ export class TableController {
     const player = this.table.player(id);
     if (!player || player.connected === connected) return;
     player.connected = connected;
-    if (connected && player.away && player.stack > 0) {
+    // 掉线被自动设成离开的人，连回来就回到牌桌；自己点了「暂时离开」的不动
+    if (connected && player.away && !player.awayByChoice && player.stack > 0) {
       player.away = false;
       player.sittingOut = false;
     }
@@ -85,6 +86,7 @@ export class TableController {
     const player = this.table.player(id);
     if (!player) return;
     player.away = away;
+    player.awayByChoice = away;
     player.timeouts = 0;
     player.sittingOut = away || player.stack === 0;
     this.changed();
@@ -103,6 +105,7 @@ export class TableController {
     player.buyIns += 1;
     player.sittingOut = false;
     player.away = false;
+    player.awayByChoice = false;
     player.busted = false;
     this.notices.push({ t: 'rebuy', id, amount: player.stack });
     this.changed();
@@ -175,15 +178,23 @@ export class TableController {
         const [lo, hi] = THINK[this.settings.botSpeed] || THINK.normal;
         wait = lo + Math.floor(this.aiRandom.float() * (hi - lo));
         run = () => this.botAct(id);
-      } else if (this.settings.turnSeconds > 0 || (player.agent === 'remote' && !player.connected)) {
-        // 掉线的人即使房主设了不限时，也最多等 DISCONNECT_GRACE，免得整桌卡住
-        const limit = this.settings.turnSeconds > 0 ? this.settings.turnSeconds * 1000 : Infinity;
-        wait = player.agent === 'remote' && !player.connected ? Math.min(limit, DISCONNECT_GRACE) : limit;
-        if (player.agent === 'remote' && !player.connected) key += ':offline';
-        run = () => this.autoAct(id, true);
       } else {
-        this.stage = { key, at: null };
-        return;  // 不限时：等玩家自己点
+        // 真人：回合的截止时间在轮到他时就定下（不限时就没有）。掉线的人最多再等 DISCONNECT_GRACE，免得整桌卡住；
+        // 连回来恢复原来的截止时间。断开再连不会多出时间，不然就能一直拖着不行动
+        const offline = player.agent === 'remote' && !player.connected;
+        if (!this.stage || this.stage.key !== key) {
+          const limit = this.settings.turnSeconds > 0 ? this.settings.turnSeconds * 1000 : null;
+          this.stage = { key, deadline: limit === null ? null : now + limit, turnStart: now, offlineAt: null };
+        }
+        const stage = this.stage;
+        if (offline) stage.offlineAt ??= now;
+        else stage.offlineAt = null;
+        const grace = stage.offlineAt === null ? null : stage.offlineAt + DISCONNECT_GRACE;
+        stage.at = stage.deadline === null ? grace : grace === null ? stage.deadline : Math.min(stage.deadline, grace);
+        stage.started = stage.deadline === null ? stage.offlineAt : stage.turnStart;  // 倒计时圈从哪里算起
+        if (stage.at === null) return;  // 不限时、人也在：等他自己点
+        this.timer = this.timers.set(() => this.autoAct(id, true), Math.max(0, this.stage.at - now));
+        return;
       }
     }
     if (!this.stage || this.stage.key !== key) this.stage = { key, at: now + wait, started: now };
@@ -229,8 +240,10 @@ export class TableController {
     if (this.state === 'over') return;
     for (const player of table.players) if (player.leaving) table.removePlayer(player.id);
 
-    for (const player of table.players) {
-      if (player.stack > 0) continue;
+    // 同一手里出局的几个人，这一手开始时筹码少的先算出局（名次靠后），不按座位顺序
+    const startStack = id => table.hand?.players[id]?.startStack ?? 0;
+    const busted = table.players.filter(p => p.stack === 0).sort((a, b) => startStack(a.id) - startStack(b.id));
+    for (const player of busted) {
       if (this.settings.mode === 'tournament') {
         if (!player.eliminated) {
           player.eliminated = true;
@@ -266,8 +279,7 @@ export class TableController {
       if (this.handsAtLevel >= this.settings.levelHands && this.level < LEVELS.length - 1) {
         this.level += 1;
         this.handsAtLevel = 0;
-        const factor = LEVELS[this.level];
-        table.setBlinds(niceChips(this.settings.smallBlind * factor), niceChips(this.settings.bigBlind * factor));
+        table.setBlinds(...levelBlinds(this.settings.smallBlind, this.settings.bigBlind, this.level));
         this.notices.push({ t: 'level', level: this.level + 1, sb: table.smallBlind, bb: table.bigBlind });
       }
     }
@@ -322,6 +334,12 @@ export class TableController {
       notices: this.notices.slice()
     });
   }
+}
+
+/** 第 level 级（从 0 开始）的盲注：小盲取整到好看的数，大盲按起始的比例跟着小盲走，免得出现 80/150、100/250 这种 */
+export function levelBlinds(smallBlind, bigBlind, level) {
+  const sb = niceChips(smallBlind * LEVELS[Math.min(level, LEVELS.length - 1)]);
+  return [sb, Math.round(sb * bigBlind / smallBlind)];
 }
 
 /** 盲注取整到好看的数：10、15、25、30、40、50、60、75、100、150… */
