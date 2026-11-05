@@ -32,25 +32,43 @@ export function recordFromView(view, { mode = 'solo', room = null, at = Date.now
   };
 }
 
-export function loadHistory(storage = globalThis.localStorage) {
+// 浏览器禁止存储时，读 localStorage 这个属性本身就会抛 SecurityError，所以要在 try 里取，不能写成默认参数。
+// 存不了的时候记录先放在内存里，这次访问里「牌局记录」页照样能看
+let memory = [];
+let memoryOnly = false;  // 写入失败过（比如空间满了）就一直用内存里的
+function storageOf(storage) {
   try {
-    const list = JSON.parse(storage.getItem(KEY) || '[]');
-    return Array.isArray(list) ? list : [];
+    return storage ?? globalThis.localStorage ?? null;
   } catch {
-    return [];
+    return null;
   }
 }
 
-export function saveHistory(list, storage = globalThis.localStorage) {
+export function loadHistory(storage) {
+  const store = storageOf(storage);
+  if (!store || memoryOnly) return memory.slice();
   try {
-    storage.setItem(KEY, JSON.stringify(list.slice(-LIMIT)));
+    const list = JSON.parse(store.getItem(KEY) || '[]');
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return memory.slice();
+  }
+}
+
+export function saveHistory(list, storage) {
+  memory = list.slice(-LIMIT);
+  const store = storageOf(storage);
+  if (!store) return false;
+  try {
+    store.setItem(KEY, JSON.stringify(memory));
     return true;
   } catch {
+    memoryOnly = true;
     return false;
   }
 }
 
-export function addRecord(record, storage = globalThis.localStorage) {
+export function addRecord(record, storage) {
   if (!record) return loadHistory(storage);
   const list = loadHistory(storage).filter(r => r.id !== record.id);
   list.push(record);
@@ -58,8 +76,10 @@ export function addRecord(record, storage = globalThis.localStorage) {
   return list.slice(-LIMIT);
 }
 
-export function clearHistory(storage = globalThis.localStorage) {
-  try { storage.removeItem(KEY); } catch { /* 忽略 */ }
+export function clearHistory(storage) {
+  memory = [];
+  memoryOnly = false;
+  try { storageOf(storage)?.removeItem(KEY); } catch { /* 忽略 */ }
 }
 
 /** 只统计自己坐在里面的那些手 */

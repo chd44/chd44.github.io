@@ -146,11 +146,13 @@ const en = {
 export const DICTIONARY = { zh, en };
 let language = 'zh';
 
-export function detectLanguage(storage = globalThis.localStorage) {
+export function detectLanguage(storage) {
   try {
-    const own = JSON.parse(storage.getItem('holdem.settings') || '{}');
+    // 浏览器禁止存储时，读 localStorage 这个属性本身就会抛 SecurityError，所以要在 try 里取，不能写成默认参数
+    const store = storage ?? globalThis.localStorage;
+    const own = JSON.parse(store.getItem('holdem.settings') || '{}');
     if (own.lang === 'zh' || own.lang === 'en') return own.lang;
-    const home = JSON.parse(storage.getItem('jefferson.preferences') || '{}');
+    const home = JSON.parse(store.getItem('jefferson.preferences') || '{}');
     if (home.lang === 'zh' || home.lang === 'en') return home.lang;
   } catch { /* 没有存储也能用 */ }
   return (globalThis.navigator?.language || 'zh').toLowerCase().startsWith('zh') ? 'zh' : 'en';

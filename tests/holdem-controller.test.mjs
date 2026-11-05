@@ -284,3 +284,55 @@ test('joining a full room while someone is still leaving gets a clean "full" rep
   assert.deepEqual(second.sent.map(m => m.t), ['reject']);
   assert.equal(second.sent[0].reason, 'full');
 });
+
+// Codex review on PR #2: removing a player who had already folded freed the seat mid-hand, and the
+// settlement then crashed reading that player's stack.
+test('a player who folds and then leaves keeps the seat until the hand is settled', () => {
+  const { c, clock } = controller({ maxSeats: 3 });
+  c.addPlayer({ id: 'me', name: 'Me', agent: 'local' });
+  c.addPlayer({ id: 'r1', name: 'Remote', agent: 'remote' });
+  c.addPlayer({ id: 'b1', name: 'Bot', agent: 'bot', style: 'station' });
+  c.start();
+  for (let step = 0; step < 200 && c.table.hand?.toAct !== 'r1'; step++) {
+    if (c.table.hand?.toAct === 'me') c.submit('me', { type: c.table.legalActions('me').canCheck ? 'check' : 'call' });
+    else clock.runNext();
+  }
+  const number = c.table.hand.number;
+  assert.ok(c.submit('r1', { type: 'fold' }));
+  if (c.table.hand.phase !== 'complete') {
+    assert.doesNotThrow(() => c.removePlayer('r1'));
+    assert.ok(c.table.player('r1'), 'still seated while the hand is being played');
+    assert.throws(() => c.table.removePlayer('r1'), /still in the hand/, 'the engine refuses too');
+  }
+  for (let step = 0; step < 500 && !(c.table.hand.number === number && c.table.hand.phase === 'complete'); step++) {
+    const hand = c.table.hand;
+    if (hand.phase === 'betting' && hand.toAct === 'me') c.submit('me', { type: c.table.legalActions('me').canCheck ? 'check' : 'call' });
+    else assert.ok(clock.runNext(), 'table stalled');
+  }
+  assert.equal(c.table.hand.phase, 'complete');
+  assert.ok('r1' in c.table.hand.result.net, 'the folded player is still settled');
+  c.removePlayer('r1');
+  for (let step = 0; step < 50 && c.table.player('r1'); step++) clock.runNext();
+  assert.equal(c.table.player('r1'), null, 'seat is freed once the hand is over');
+});
+
+// Codex review on PR #2: when the browser blocks storage, just reading localStorage throws SecurityError,
+// and a default parameter is evaluated outside the try block.
+test('blocked storage does not break language detection or hand history', async () => {
+  const { detectLanguage } = await import('../holdem/js/i18n.js');
+  const history = await import('../holdem/js/history.js');
+  const original = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, get() { throw new Error('SecurityError: The operation is insecure.'); } });
+  try {
+    assert.ok(['zh', 'en'].includes(detectLanguage()));
+    assert.deepEqual(history.loadHistory(), []);
+    const record = { id: 'x', hand: 1, events: [], pots: [], net: 5, you: 'me', shown: {}, players: [], board: [], blinds: { sb: 1, bb: 2 }, at: 0 };
+    assert.doesNotThrow(() => history.addRecord(record));
+    assert.equal(history.loadHistory().length, 1, 'kept in memory for this visit');
+    assert.doesNotThrow(() => history.clearHistory());
+    assert.deepEqual(history.loadHistory(), []);
+  } finally {
+    if (original) Object.defineProperty(globalThis, 'localStorage', original);
+    else delete globalThis.localStorage;
+  }
+});

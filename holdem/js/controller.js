@@ -59,16 +59,13 @@ export class TableController {
     return player;
   }
 
-  /** 离座：不在牌局里就马上走；还在牌局里就等这一手结束（轮到他时自动弃牌） */
+  /** 离座：不在这一手里就马上走；在这一手里（弃了牌也算）就等这一手结算完，轮到他时自动弃牌 */
   removePlayer(id) {
     const player = this.table.player(id);
     if (!player) return;
-    const hp = this.table.hand?.players[player.id];
-    if (hp && this.table.hand.phase !== 'complete' && !hp.folded) {
-      player.leaving = true;
-    } else {
-      this.table.removePlayer(id);
-    }
+    const hand = this.table.hand;
+    if (hand && hand.phase !== 'complete' && hand.players[id]) player.leaving = true;
+    else this.table.removePlayer(id);
     this.changed();
   }
 

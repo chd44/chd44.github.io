@@ -38,12 +38,11 @@ export class HoldemTable {
     return player;
   }
 
-  /** 牌局进行中、还没弃牌的玩家不能直接离座：先弃牌（控制器负责） */
+  /** 这一手还没打完时，参与这一手的人（弃了牌的也算）不能离座：结算要用到他的筹码。控制器会等这一手结束再移走 */
   removePlayer(id) {
     const player = this.player(id);
     if (!player) return null;
-    const hp = this.hand?.players[id];
-    if (hp && this.hand.phase !== 'complete' && !hp.folded) throw new Error('Player is still in the hand');
+    if (this.hand?.players[id] && this.hand.phase !== 'complete') throw new Error('Player is still in the hand');
     this.seats[player.seat] = null;
     return player;
   }
