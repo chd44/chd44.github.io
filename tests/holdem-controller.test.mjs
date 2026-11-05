@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { TableController, niceChips } from '../holdem/js/controller.js';
+import { TableController, niceChips, levelBlinds } from '../holdem/js/controller.js';
 import { buildView, HIDDEN } from '../holdem/js/view.js';
 import { seededRandom } from '../holdem/js/cards.js';
 import { recordFromView, stats, recordText } from '../holdem/js/history.js';
@@ -335,4 +335,99 @@ test('blocked storage does not break language detection or hand history', async 
     if (original) Object.defineProperty(globalThis, 'localStorage', original);
     else delete globalThis.localStorage;
   }
+});
+
+// 全面检查（2026-11-05）：一条连接换着 token 连发 hello，会占好几个座位，还能收到每个座位的底牌。
+test('one connection can only hold one seat, however many hellos it sends', async () => {
+  const { RoomHost } = await import('../holdem/js/net.js');
+  const { c } = controller({ maxSeats: 6 });
+  c.addPlayer({ id: 'host', name: 'Host', agent: 'local' });
+  let accept;
+  const room = new RoomHost({ controller: c, transport: { host: async () => ({ onConnection: fn => { accept = fn; }, close() {} }) }, code: 'ABCDEF' });
+  await room.open();
+  clearInterval(room.heartbeat);
+  const sent = [], handlers = [];
+  accept({ send: m => sent.push(m), onMessage: fn => handlers.push(fn), onClose() {}, close() {} });
+  for (let i = 0; i < 4; i++) handlers.forEach(fn => fn({ t: 'hello', v: 1, name: 'X' + i, token: 'tok' + i }));
+  assert.deepEqual(c.players.filter(p => p.agent === 'remote').map(p => p.id), ['r1']);
+  assert.deepEqual([...new Set(sent.filter(m => m.t === 'view').map(m => m.view.you))], ['r1']);
+});
+
+// 全面检查：掉线时换一个截止时间、连回来再换回完整的时间，断开再连就能一直拖着不行动。
+test('dropping and reconnecting does not give a player a fresh turn clock', () => {
+  const { c, clock } = controller({ maxSeats: 3, turnSeconds: 30 });
+  c.addPlayer({ id: 'r1', name: 'Remote', agent: 'remote' });
+  c.addPlayer({ id: 'b1', name: 'Bot', agent: 'bot', style: 'station' });
+  c.start();
+  while (c.table.hand?.toAct !== 'r1') assert.ok(clock.runNext());
+  const start = clock.now(), log = c.table.hand.log.length, number = c.table.hand.number;
+  c.setConnected('r1', false);
+  assert.equal(c.stage.at, start + 20000, 'an offline player gets at most the grace period');
+  c.setConnected('r1', true);
+  assert.equal(c.stage.at, start + 30000, 'back online: the original deadline, not a fresh 30 seconds');
+  for (let i = 0; i < 5; i++) { c.setConnected('r1', false); c.setConnected('r1', true); }
+  assert.equal(c.stage.at, start + 30000);
+  assert.ok(clock.runNext());
+  assert.ok(c.table.hand.log.length > log || c.table.hand.number > number, 'auto-acted');
+  assert.equal(clock.now(), start + 30000);
+});
+
+// 全面检查：自己点了「暂时离开」，网络一抖连回来就被拉回牌桌，人不在还要下盲注。
+test('a chosen sit-out survives a reconnect; being sat out for dropping does not', () => {
+  const { c } = controller({ maxSeats: 3 });
+  c.addPlayer({ id: 'r1', name: 'Remote', agent: 'remote' });
+  c.addPlayer({ id: 'r2', name: 'Remote2', agent: 'remote' });
+  c.setAway('r1', true);
+  c.setConnected('r1', false);
+  c.setConnected('r1', true);
+  assert.equal(c.table.player('r1').away, true);
+  assert.equal(c.table.player('r1').sittingOut, true);
+  c.setAway('r1', false);
+  assert.equal(c.table.player('r1').sittingOut, false);
+
+  const r2 = c.table.player('r2');
+  c.setConnected('r2', false);
+  Object.assign(r2, { away: true, sittingOut: true });  // nextHand does this to players who are offline
+  c.setConnected('r2', true);
+  assert.equal(r2.away, false);
+  assert.equal(r2.sittingOut, false);
+});
+
+// 全面检查：同一手里出局的人按座位顺序记名次，起手筹码多的反而排在后面。
+test('players knocked out in the same hand are ranked by the chips they started it with', () => {
+  for (const [first, second] of [[300, 100], [100, 300]]) {
+    const { c, clock } = controller({ maxSeats: 3, mode: 'tournament', startingStack: 1000 });
+    c.addPlayer({ id: 'me', name: 'Me', agent: 'local' });
+    c.addPlayer({ id: 'a', name: 'A', agent: 'bot', style: 'station', stack: first });
+    c.addPlayer({ id: 'b', name: 'B', agent: 'bot', style: 'station', stack: second });
+    c.start();
+    while (!c.table.hand) assert.ok(clock.runNext());
+    const hand = c.table.hand;
+    // 我拿 AA，两个人都全下输给我
+    hand.players.me.hole = [51, 50];
+    hand.players.a.hole = [0, 5];
+    hand.players.b.hole = [1, 6];
+    hand.deck = hand.deck.filter(card => ![51, 50, 0, 5, 1, 6].includes(card)).concat([10, 15, 20, 25, 30, 35, 40, 45]);
+    while (c.table.hand.phase === 'betting') c.table.act(c.table.hand.toAct, { type: 'allin' });
+    while (c.table.hand.phase !== 'complete') c.table.step();
+    c.changed();
+    while (c.state !== 'over') assert.ok(clock.runNext());
+    const shortStack = first < second ? 'a' : 'b';
+    assert.equal(c.finished[0].id, shortStack, 'the shorter stack is out first');
+    assert.deepEqual(c.standings().map(s => s.id), ['me', shortStack === 'a' ? 'b' : 'a', shortStack]);
+  }
+});
+
+// 全面检查：大小盲各自取整，会出现 80/150、100/250、600/1500 这种小盲不是大盲一半的级别。
+test('every blind level keeps the starting small/big blind ratio and keeps rising', () => {
+  for (const [sb, bb] of [[5, 10], [10, 20], [25, 50]]) {
+    let last = 0;
+    for (let level = 0; level < 17; level++) {
+      const [s, b] = levelBlinds(sb, bb, level);
+      assert.equal(b, s * 2, `${sb}/${bb} level ${level + 1}: ${s}/${b}`);
+      assert.ok(b > last, `${sb}/${bb} level ${level + 1} rises`);
+      last = b;
+    }
+  }
+  assert.deepEqual(levelBlinds(10, 20, 0), [10, 20]);
 });

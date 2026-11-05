@@ -221,7 +221,8 @@ export class RoomHost {
       if (now - budgetAt > 1000) { budget = 40; budgetAt = now; }
       if (--budget < 0 || !message || typeof message !== 'object') return;
       if (playerId) this.markSeen(playerId);
-      if (message.t === 'hello') playerId = this.hello(connection, message) ?? playerId;
+      // 一条连接只认第一次成功的 hello：不然改过的客户端可以换着 token 再占几个座位，还能收到每个座位的底牌
+      if (message.t === 'hello') { if (!playerId) playerId = this.hello(connection, message); }
       else if (playerId) this.handle(playerId, message, connection);
     });
     connection.onClose(() => {

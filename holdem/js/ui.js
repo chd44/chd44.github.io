@@ -149,7 +149,11 @@ export class TableRenderer {
     $('raise-cancel').addEventListener('click', () => this.closeRaise());
     $('raise-go').addEventListener('click', () => this.confirmRaise());
     const slider = $('raise-slider'), input = $('raise-input');
-    slider.addEventListener('input', () => { input.value = slider.value; this.updateRaiseLabel(); });
+    // 滑杆按 step 走格子，筹码不是格子整数倍时拉到头也到不了最大值：最后一格直接算全下
+    slider.addEventListener('input', () => {
+      input.value = Number(slider.value) + (Number(slider.step) || 1) > Number(slider.max) ? slider.max : slider.value;
+      this.updateRaiseLabel();
+    });
     input.addEventListener('input', () => { slider.value = input.value; this.updateRaiseLabel(); });
     input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); this.confirmRaise(); } });
     document.addEventListener('keydown', e => this.shortcut(e));
