@@ -13,6 +13,7 @@ for (const name of ['assets/banner.webp', 'assets/avatar.jpg', 'vendor/gsap.min.
 }
 await rm(destination, { recursive: true, force: true });
 await mkdir(destination, { recursive: true });
+await cp(path.join(root, 'holdem'), path.join(destination, 'holdem'), { recursive: true });  // 好友牌桌在线版
 for (const name of files) await cp(path.join(root, name), path.join(destination, name), { recursive: true });
 await writeFile(path.join(destination, '404.html'), '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Jefferson Cai · 404</title><style>body{font:16px/1.8 system-ui;background:#f0f3fa;color:#222b41;display:grid;place-content:center;min-height:90vh;text-align:center}a{color:#4c64db}h1{font-size:64px;margin:0}</style><h1>404</h1><p>这个页面暂时没有找到。<br>This page could not be found.</p><a href="./">返回主页 / Back home</a></html>');
 console.log('Built dist/ — standalone static site, GitHub Pages subpaths supported.');
