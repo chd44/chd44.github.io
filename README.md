@@ -20,7 +20,7 @@ GitHub Pages 从 main 分支的根目录直接发布；每次推送后自动更�
 
 ## 本地预览
 
-网页资源全部位于仓库中，可以直接打开 index.html。使用本地 HTTP 预览时，需要 Node.js 24：
+网页资源全部位于仓库中，可以直接打开 index.html。使用本地 HTTP 预览时，需要 Node.js 22.13 或更高版本：
 
 ```sh
 npm ci
@@ -36,6 +36,22 @@ npm test
 npm run build
 npm run preview
 ```
+
+## 图标
+
+页面只打包实际用到的 Lucide 图标（`vendor/lucide-icons.js`，约 8 KB；完整的 Lucide 包约 360 KB）。在 index.html 里新增或更换 `data-lucide` 图标后，运行：
+
+```sh
+npm run icons
+```
+
+`npm test` 会检查页面上的每个图标都在这个子集里。
+
+## 分享卡片与搜索
+
+- `assets/og-image.jpg`（1200 × 630）是链接分享到微信、LinkedIn、X 等处时显示的预览图，用横幅加网页同款文字排版生成。
+- `<head>` 里有 canonical、Open Graph、Twitter 卡片和 schema.org `Person` 结构化数据；根目录的 `robots.txt`、`sitemap.xml` 供搜索引擎使用。
+- 改了网址、名字或社交链接时，记得同步改这几处。
 
 ## 素材与许可
 
